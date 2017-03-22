@@ -1,13 +1,27 @@
 /**
  * Created by stef on 10/03/17.
  */
-//const {DeadPool} = require('./DeadPool');
+
+
 
 class Poney {
-  constructor() {
+  constructor(myobjgerecycle) {
     this.regInter = setInterval(() => this.Regeneration(), 1000);
+
     this.energy = 0;
+    this.vitesseregeneration = 10;
     this.isUnicorn = false;
+
+    this.isUsed = false;
+    this.gerecycle = myobjgerecycle;
+    this.gerecycle.eventgerecyclejour.on('Jour', function(){
+      this.vitesseregeneration = 10;
+    });
+
+    this.gerecycle.eventgerecyclejour.on('Nuit', function(){
+      this.vitesseregeneration = 20;
+    });
+
 
 
   }
@@ -16,7 +30,7 @@ class Poney {
 
 
     if ((this.energy <= 90) && !this.isUnicorn) {
-      this.energy += 10;
+      this.energy += this.vitesseregeneration;
     }
     else{
       this.energy = 100;
@@ -30,33 +44,26 @@ class Poney {
 
   evolve() {
     return new Promise((resolve, reject) => {
+      this.isUsed = true;
       setTimeout(() => {
         if (!this.isUnicorn) {
-          console.log(colors.fg.Blue,`pas une licorne ${this.energy}`,colors.Reset);
-          if(this.energy >= 100) {
-            resolve();
-            this.energy = 0;
-            this.isUnicorn = true;
-            console.log(colors.fg.Blue,'Transformation unicorn !',colors.Reset);
-          }
-          else {
-            console.log(colors.fg.Blue,'Energie insuffisante',colors.Reset);
-            reject();
-          }
+          resolve();
+          this.energy = 0;
+          this.isUnicorn = true;
         }
         else {
           reject();
           console.log(colors.fg.Blue,'Already an unicorn',colors.Reset);
         }
       }, 100);
+      this.isUsed = false;
     });
-
-
   }
 
 
   backPoney() {                    //Retransforme les licornes en poney
     return new Promise((resolve, reject) => {
+      this.isUsed = true;
       setTimeout(() => {
         if (this.isUnicorn) {
           resolve();
@@ -66,6 +73,7 @@ class Poney {
           reject();
         }
       }, 100);
+      this.isUsed = false;
     });
   }
 }

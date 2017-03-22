@@ -7,22 +7,32 @@
 
 
 class Spiderman {
+  constructor(myponey,myobjgerecycle) {
 
-
-  constructor(myponey) {
-
-    this.regInterPlayea= setInterval(() => this.PlayPoney(), 1000);
+    this.regInterPlay= setInterval(() => this.playPoney(), 1000);
     this.poneys = myponey;
+    this.gerecycle = myobjgerecycle;
 
+    this.gerecycle.eventgerecyclejour.on('Jour', function(){
+      console.log(colors.bg.Blue,'Jour : Spiderman est plus joueur !',colors.Reset);
+      clearInterval(this.regInterPlay);
+      this.regInterPlay = setInterval(() => this.playPoney(),1500);     //1000 ?
+    });
+
+    this.gerecycle.eventgerecyclejour.on('Nuit', function(){
+      console.log(colors.bg.Red,'NUIT : Spiderman dort et est moins joueur',colors.Reset);
+      clearInterval(this.regInterPlay);
+      this.regInterPlay = setInterval(() => this.playPoney(),2000);
+    });
   }
-    PlayPoney(){
-
-    console.log(' ');
-    console.log(colors.fg.Red,'SPIDERMAN : ',colors.Reset);
-    console.log(' ');
+    playPoney(){
     this.checkPoney()
-      .then(() => console.log(colors.fg.Red,'Spiderman joueur et epuise licorne',colors.Reset))
-      .catch(() => console.log(colors.fg.Red,'Spiderman pas joueur',colors.Reset))
+      .then(() => {
+        console.log(colors.fg.Red,'SPIDERMAN joueur et epuise licorne',colors.Reset);
+      })
+      .catch(() => {
+        console.log(colors.fg.Red,'SPIDERMAN pas joueur',colors.Reset);
+      })
   }
 
 
@@ -32,25 +42,32 @@ class Spiderman {
       setTimeout(() => {
         var iNumPoney = Math.floor((Math.random() * 4) + 1);
         var bConard = (Math.floor((Math.random() * 100) + 1) >= 50);      // 1 chance sur 2 d'utiliser la licorne
-        if (bConard){
-          this.poneys[iNumPoney].backPoney()
-            .then(() =>  console.log(colors.fg.Red,`Licorn ${iNumPoney} to Poney ok`,colors.Reset))
-            .then(() => this.isRegenerate = true)
-            .then(() =>  resolve())
-            .catch(() => console.log(colors.fg.Red,`Number ${iNumPoney} Already poney`,colors.Reset))
-            .catch(() =>  reject());
-        }
+        if(!this.poneys[iNumPoney].isUsed) {
+          if (bConard) {
+            this.poneys[iNumPoney].backPoney()
+              .then(() => {
+                console.log(colors.fg.Red, `Licorn ${iNumPoney} to Poney ok`, colors.Reset);
+                this.isRegenerate = true;
+                resolve();
+              })
+              .catch(() => {
+                console.log(colors.fg.Red, `Number ${iNumPoney} Already poney`, colors.Reset);
+                reject();
+              })
+          }
 
+          else {
+            console.log(colors.fg.Red, `Reste une licorne pour cette fois ! Numero : ${iNumPoney}`, colors.Reset);
+            reject();
+          }
+        }
         else{
-          console.log(colors.fg.Red,`Reste une licorne pour cette fois ! Numero : ${iNumPoney}`,colors.Reset);
-          reject();
+          console.log(colors.fg.Red,`Number ${iNumPoney} already used by DeadPool`, colors.Reset);
         }
       }, 100);
     });
   }
 }
-
-
 module.exports = {Spiderman};
 
 

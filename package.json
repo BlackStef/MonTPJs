@@ -1,0 +1,27 @@
+{
+
+  "name": "MonTPJs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/BlackStef/MonTPJs.git",
+  "license": "MIT",
+  "xo": {
+    "esnext": true ,
+    "envs": [
+      "node",
+      "mocha"
+    ],
+    "space": 2,
+    "rules": {
+      "max -len": [
+        "error",
+        80,
+        2
+      ]
+    },
+    "ignores": [
+      "Gruntfile.js"
+    ]
+  }
+}
+}
