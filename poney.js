@@ -1,17 +1,20 @@
 const chalk = require('chalk');
-const {DeadPool} = require('./DeadPool');
-const BlueBirdPromise = require("bluebird");
+const BlueBirdPromise = require('bluebird');
+const {DeadPool} = require('./deadpool');
+const {Spiderman} = require('./spiderman');
 
 class Poney {
   constructor(myobjgerecycle) {
-    this.regInter = setInterval(() => this.regeneration(), 1000);
-    this.askInter = setInterval(() => this.askForEvolve(), 2000);
+    this.regInter = setInterval(() => this.regeneration(), 2000);
+    this.askInter = setInterval(() => this.askForEvolve(), 4000);
     this.energy = 0;
     this.vitesseregeneration = 10;
     this.isUnicorn = false;
     this.isUsed = false;
 
     this.dead = new DeadPool(myobjgerecycle);
+    this.spiderman = new Spiderman(myobjgerecycle);
+    this.spiderman.addPoney(this);
     this.dead.addPoney(this);
     this.indexPoney = this.dead.poneys.length - 1;
 
@@ -40,11 +43,14 @@ class Poney {
   askForEvolve() {
     console.log(' ');
     console.log(chalk.blue(`Number ${this.indexPoney} Ask for UNICORN !`));
-    console.log(' ');
-
-    if (Math.floor((Math.random() * 100) + 1) <= this.energy) {
-      if (!this.isUnicorn) {
-        this.isUsed = true;
+    if (this.isUsed) {
+      console.log(chalk.blue(`Number ${this.indexPoney} already used !`));
+    } else if (Math.floor((Math.random() * 100) + 1) <= this.energy) {
+      if (this.isUnicorn) {
+        console.log(
+          chalk.blue(`Number ${this.indexPoney} already an unicorn !`));
+      } else {
+        console.log(chalk.blue(`Energie suffisante ! Demande ...`));
         this.dead.makeEvolve(this)
           .then(() => {
             console.log(chalk.blue(`Number ${this.indexPoney} evolving !`));
@@ -57,27 +63,27 @@ class Poney {
             this.energy = 0;
             this.isUsed = false;
           });
-      } else {
-        console.log(chalk.blue(`Number ${this.indexPoney} already an unicorn !`));
       }
     } else {
-      console.log(chalk.blue(`Energie du poney ${this.indexPoney} : ${this.energy} `));
+      console.log(
+        chalk.blue(`Energie du poney ${this.indexPoney} : ${this.energy} `));
       console.log(chalk.blue(`Echec de l'evolution, energie trop faible`));
     }
   }
 
-  backPoney() {                    // Retransforme les licornes en poney
+  backPoney() {
     return new BlueBirdPromise((resolve, reject) => {
       this.isUsed = true;
       setTimeout(() => {
         if (this.isUnicorn) {
           resolve();
+          this.isUnicorn = false;
           this.energy = 0;
         } else {
           reject();
         }
+        this.isUsed = false;
       }, 100);
-      this.isUsed = false;
     });
   }
 }

@@ -3,7 +3,7 @@ const EventEmitter = require('events').EventEmitter;
 class CycleDayManager {
 
   constructor() {
-    this.InterGereCycle = setInterval(() => this.emitEvent(), 1000);
+    this.InterGereCycle = setInterval(() => this.emitEvent(), 4000);
     this.bJour = true;  // False : Nuit   True : Jour
     this.eventgerecyclejour = new EventEmitter();
   }

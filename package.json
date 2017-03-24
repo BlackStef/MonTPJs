@@ -22,7 +22,7 @@
     ],
     "space": 2,
     "rules": {
-      "max -len": [
+      "max-len": [
         "error",
         80,
         2
