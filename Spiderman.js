@@ -4,27 +4,31 @@
 /**
  * Created by stef on 10/03/17.
  */
-
+let InstanceSpiderman = null;
 
 class Spiderman {
   constructor(myponey,myobjgerecycle) {
 
-    this.regInterPlay= setInterval(() => this.playPoney(), 1000);
-    this.poneys = myponey;
-    this.gerecycle = myobjgerecycle;
+    if (!InstanceSpiderman) {
+      this.regInterPlay = setInterval(() => this.playPoney(), 1000);
+      this.poneys = myponey;
+      this.gerecycle = myobjgerecycle;
+      InstanceSpiderman = this;
+      this.gerecycle.eventgerecyclejour.on('Jour', function () {
+        console.log(colors.bg.Blue, 'Jour : Spiderman est plus joueur !', colors.Reset);
+        clearInterval(this.regInterPlay);
+        this.regInterPlay = setInterval(() => this.playPoney(), 1500);     //1000 ?
+      });
 
-    this.gerecycle.eventgerecyclejour.on('Jour', function(){
-      console.log(colors.bg.Blue,'Jour : Spiderman est plus joueur !',colors.Reset);
-      clearInterval(this.regInterPlay);
-      this.regInterPlay = setInterval(() => this.playPoney(),1500);     //1000 ?
-    });
-
-    this.gerecycle.eventgerecyclejour.on('Nuit', function(){
-      console.log(colors.bg.Red,'NUIT : Spiderman dort et est moins joueur',colors.Reset);
-      clearInterval(this.regInterPlay);
-      this.regInterPlay = setInterval(() => this.playPoney(),2000);
-    });
+      this.gerecycle.eventgerecyclejour.on('Nuit', function () {
+        console.log(colors.bg.Red, 'NUIT : Spiderman dort et est moins joueur', colors.Reset);
+        clearInterval(this.regInterPlay);
+        this.regInterPlay = setInterval(() => this.playPoney(), 2000);
+      });
+    }
   }
+
+
     playPoney(){
     this.checkPoney()
       .then(() => {
@@ -34,6 +38,8 @@ class Spiderman {
         console.log(colors.fg.Red,'SPIDERMAN pas joueur',colors.Reset);
       })
   }
+
+
 
 
 

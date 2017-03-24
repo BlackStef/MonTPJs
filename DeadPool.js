@@ -6,16 +6,20 @@ const {Spiderman} = require('./Spiderman');
 const {GereJourNuit} = require('./GereJourNuit');
 const EventEmitter = require('events').EventEmitter;
 
+let InstanceDeadpool = null;
 class DeadPool {
   constructor(MyTabPoney, myobjgerecycle) {
-    this.regInterDead = setInterval(() => this.regeneration(),3000);
-    this.transInter = setInterval(() => this.makeUnicorn(), 2000 );
-    this.InterCompte = setInterval(() => this.compteLicorne(), 4000 );
-    this.isRegenerate = false;
-    this.compteUnicorn = 0;
-    this.comptePoney = 0;
-    this.poneys = MyTabPoney;
-    this.gerecycle = myobjgerecycle;
+    if(!InstanceDeadpool) {
+      this.regInterDead = setInterval(() => this.regeneration(), 3000);
+      this.transInter = setInterval(() => this.makeUnicorn(), 2000);
+      this.InterCompte = setInterval(() => this.compteLicorne(), 4000);
+      this.isRegenerate = false;
+      this.compteUnicorn = 0;
+      this.comptePoney = 0;
+      this.poneys = MyTabPoney;
+      this.gerecycle = myobjgerecycle;
+      InstanceDeadpool = this;
+    }
 
 
     this.gerecycle.eventgerecyclejour.on('Jour', function(){
