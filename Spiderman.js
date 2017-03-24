@@ -1,110 +1,67 @@
-/**
- * Created by Stef on 19/03/2017.
- */
-/**
- * Created by stef on 10/03/17.
- */
-let InstanceSpiderman = null;
+const chalk = require('chalk');
+const BlueBirdPromise = require("bluebird");
+
+let instanceSpiderman = null;
 
 class Spiderman {
-  constructor(myponey,myobjgerecycle) {
-
-    if (!InstanceSpiderman) {
-      this.regInterPlay = setInterval(() => this.playPoney(), 1000);
+  constructor(myponey, myobjgerecycle) {
+    if (!instanceSpiderman) {
+      this.regInterPlay = setInterval(() => this.playPoney(), 1500);
       this.poneys = myponey;
-      this.gerecycle = myobjgerecycle;
-      InstanceSpiderman = this;
-      this.gerecycle.eventgerecyclejour.on('Jour', function () {
-        console.log(colors.bg.Blue, 'Jour : Spiderman est plus joueur !', colors.Reset);
-        clearInterval(this.regInterPlay);
-        this.regInterPlay = setInterval(() => this.playPoney(), 1500);     //1000 ?
-      });
+      instanceSpiderman = this;
 
-      this.gerecycle.eventgerecyclejour.on('Nuit', function () {
-        console.log(colors.bg.Red, 'NUIT : Spiderman dort et est moins joueur', colors.Reset);
-        clearInterval(this.regInterPlay);
-        this.regInterPlay = setInterval(() => this.playPoney(), 2000);
+      myobjgerecycle.eventgerecyclejour.on('cycle change', period => {
+        if (period === 'day') {
+          console.log(chalk.red('Jour : Spiderman est plus joueur !'));
+
+          clearInterval(this.regInterPlay);
+          this.regInterPlay = setInterval(() => this.playPoney(), 1000);     // 1000 ?
+        } else if (period === 'night') {
+          console.log(chalk.red('NUIT : Spiderman dort et est moins joueur'));
+          clearInterval(this.regInterPlay);
+          this.regInterPlay = setInterval(() => this.playPoney(), 2000);
+        }
       });
     }
+    return instanceSpiderman;
   }
 
-
-    playPoney(){
+  playPoney() {
     this.checkPoney()
       .then(() => {
-        console.log(colors.fg.Red,'SPIDERMAN joueur et epuise licorne',colors.Reset);
+        console.log(chalk.red('SPIDERMAN joueur et epuise licorne'));
       })
       .catch(() => {
-        console.log(colors.fg.Red,'SPIDERMAN pas joueur',colors.Reset);
-      })
+        console.log(chalk.red('SPIDERMAN pas joueur'));
+      });
   }
 
-
-
-
-
   checkPoney() {
-    return new Promise((resolve, reject) => {
+    return new BlueBirdPromise((resolve, reject) => {
       setTimeout(() => {
-        var iNumPoney = Math.floor((Math.random() * 4) + 1);
-        var bConard = (Math.floor((Math.random() * 100) + 1) >= 50);      // 1 chance sur 2 d'utiliser la licorne
-        if(!this.poneys[iNumPoney].isUsed) {
+        const iNumPoney = Math.floor((Math.random() * 4) + 1);
+        const bConard = (Math.floor((Math.random() * 100) + 1) >= 50);      // 1 chance sur 2 d'utiliser la licorne
+        if (!this.poneys[iNumPoney].isUsed) {
           if (bConard) {
             this.poneys[iNumPoney].backPoney()
               .then(() => {
-                console.log(colors.fg.Red, `Licorn ${iNumPoney} to Poney ok`, colors.Reset);
+                console.log(chalk.red(`Licorn ${iNumPoney} to Poney ok`));
                 this.isRegenerate = true;
                 resolve();
               })
               .catch(() => {
-                console.log(colors.fg.Red, `Number ${iNumPoney} Already poney`, colors.Reset);
+                console.log(chalk.red(`Number ${iNumPoney} Already poney`));
                 reject();
-              })
-          }
-
-          else {
-            console.log(colors.fg.Red, `Reste une licorne pour cette fois ! Numero : ${iNumPoney}`, colors.Reset);
+              });
+          } else {
+            console.log(chalk.red(`Reste une licorne pour cette fois ! Numero : ${iNumPoney}`));
             reject();
           }
-        }
-        else{
-          console.log(colors.fg.Red,`Number ${iNumPoney} already used by DeadPool`, colors.Reset);
+        } else {
+          console.log(chalk.red(`Number ${iNumPoney} already used by DeadPool`));
         }
       }, 100);
     });
   }
 }
 module.exports = {Spiderman};
-
-
-const colors = {
-  Reset: "\x1b[0m",
-  Bright: "\x1b[1m",
-  Dim: "\x1b[2m",
-  Underscore: "\x1b[4m",
-  Blink: "\x1b[5m",
-  Reverse: "\x1b[7m",
-  Hidden: "\x1b[8m",
-  fg: {
-    Black: "\x1b[30m",
-    Red: "\x1b[31m",
-    Green: "\x1b[32m",
-    Yellow: "\x1b[33m",
-    Blue: "\x1b[34m",
-    Magenta: "\x1b[35m",
-    Cyan: "\x1b[36m",
-    White: "\x1b[37m",
-    Crimson: "\x1b[38m" //القرمزي
-  },
-  bg: {
-    Black: "\x1b[40m",
-    Red: "\x1b[41m",
-    Green: "\x1b[42m",
-    Yellow: "\x1b[43m",
-    Blue: "\x1b[44m",
-    Magenta: "\x1b[45m",
-    Cyan: "\x1b[46m",
-    White: "\x1b[47m",
-    Crimson: "\x1b[48m"
-  }
-};

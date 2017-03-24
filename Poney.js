@@ -1,75 +1,79 @@
-/**
- * Created by stef on 10/03/17.
- */
-
-
+const chalk = require('chalk');
+const {DeadPool} = require('./DeadPool');
+const BlueBirdPromise = require("bluebird");
 
 class Poney {
   constructor(myobjgerecycle) {
-    this.regInter = setInterval(() => this.Regeneration(), 1000);
-
+    this.regInter = setInterval(() => this.regeneration(), 1000);
+    this.askInter = setInterval(() => this.askForEvolve(), 2000);
     this.energy = 0;
     this.vitesseregeneration = 10;
     this.isUnicorn = false;
-
     this.isUsed = false;
-    this.gerecycle = myobjgerecycle;
-    this.gerecycle.eventgerecyclejour.on('Jour', function(){
-      this.vitesseregeneration = 10;
+
+    this.dead = new DeadPool(myobjgerecycle);
+    this.dead.addPoney(this);
+    this.indexPoney = this.dead.poneys.length - 1;
+
+    myobjgerecycle.eventgerecyclejour.on('cycle change', period => {
+      if (period === 'day') {
+        this.vitesseregeneration = 10;
+      } else if (period === 'night') {
+        this.vitesseregeneration = 20;
+      }
     });
-
-    this.gerecycle.eventgerecyclejour.on('Nuit', function(){
-      this.vitesseregeneration = 20;
-    });
-
-
-
   }
 
-  Regeneration() {
-
-
+  regeneration() {
     if ((this.energy <= 90) && !this.isUnicorn) {
       this.energy += this.vitesseregeneration;
-    }
-    else{
+    } else {
       this.energy = 100;
     }
-   // console.log(`Regeneration, Energy : ${this.energy}`);
+    // Console.log(`Regeneration, Energy : ${this.energy}`);
   }
 
   KillPoney() {
     clearInterval(this.RegInter);
   }
 
-  evolve() {
-    return new Promise((resolve, reject) => {
-      this.isUsed = true;
-      setTimeout(() => {
-        if (!this.isUnicorn) {
-          resolve();
-          this.energy = 0;
-          this.isUnicorn = true;
-        }
-        else {
-          reject();
-          console.log(colors.fg.Blue,'Already an unicorn',colors.Reset);
-        }
-      }, 100);
-      this.isUsed = false;
-    });
+  askForEvolve() {
+    console.log(' ');
+    console.log(chalk.blue(`Number ${this.indexPoney} Ask for UNICORN !`));
+    console.log(' ');
+
+    if (Math.floor((Math.random() * 100) + 1) <= this.energy) {
+      if (!this.isUnicorn) {
+        this.isUsed = true;
+        this.dead.makeEvolve(this)
+          .then(() => {
+            console.log(chalk.blue(`Number ${this.indexPoney} evolving !`));
+            this.isUnicorn = true;
+          })
+          .catch(() => {
+            console.log(chalk.blue(`Number ${this.indexPoney} failed !`));
+          })
+          .finally(() => {
+            this.energy = 0;
+            this.isUsed = false;
+          });
+      } else {
+        console.log(chalk.blue(`Number ${this.indexPoney} already an unicorn !`));
+      }
+    } else {
+      console.log(chalk.blue(`Energie du poney ${this.indexPoney} : ${this.energy} `));
+      console.log(chalk.blue(`Echec de l'evolution, energie trop faible`));
+    }
   }
 
-
-  backPoney() {                    //Retransforme les licornes en poney
-    return new Promise((resolve, reject) => {
+  backPoney() {                    // Retransforme les licornes en poney
+    return new BlueBirdPromise((resolve, reject) => {
       this.isUsed = true;
       setTimeout(() => {
         if (this.isUnicorn) {
           resolve();
           this.energy = 0;
-        }
-        else {
+        } else {
           reject();
         }
       }, 100);
@@ -79,42 +83,6 @@ class Poney {
 }
 
 module.exports = {Poney};
-const colors = {
-  Reset: "\x1b[0m",
-  Bright: "\x1b[1m",
-  Dim: "\x1b[2m",
-  Underscore: "\x1b[4m",
-  Blink: "\x1b[5m",
-  Reverse: "\x1b[7m",
-  Hidden: "\x1b[8m",
-  fg: {
-    Black: "\x1b[30m",
-    Red: "\x1b[31m",
-    Green: "\x1b[32m",
-    Yellow: "\x1b[33m",
-    Blue: "\x1b[34m",
-    Magenta: "\x1b[35m",
-    Cyan: "\x1b[36m",
-    White: "\x1b[37m",
-    Crimson: "\x1b[38m" //القرمزي
-  },
-  bg: {
-    Black: "\x1b[40m",
-    Red: "\x1b[41m",
-    Green: "\x1b[42m",
-    Yellow: "\x1b[43m",
-    Blue: "\x1b[44m",
-    Magenta: "\x1b[45m",
-    Cyan: "\x1b[46m",
-    White: "\x1b[47m",
-    Crimson: "\x1b[48m"
-  }
-};
 
-
-
-
-
-
-//setTimeout(() => MyPoney.killPoney(), 10000);
+// SetTimeout(() => MyPoney.killPoney(), 10000);
 

@@ -1,12 +1,21 @@
 {
-
   "name": "MonTPJs",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/BlackStef/MonTPJs.git",
   "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "chalk": "^1.1.3"
+  },
+  "scripts": {
+    "test": "xo"
+  },
+  "devDependencies": {
+    "xo": "^0.18.0"
+  },
   "xo": {
-    "esnext": true ,
+    "esnext": true,
     "envs": [
       "node",
       "mocha"
@@ -23,5 +32,4 @@
       "Gruntfile.js"
     ]
   }
-}
 }

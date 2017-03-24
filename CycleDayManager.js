@@ -1,11 +1,11 @@
-const eventEmitter = require('events').EventEmitter;
+const EventEmitter = require('events').EventEmitter;
 
-class GereJourNuit {
+class CycleDayManager {
 
   constructor() {
     this.InterGereCycle = setInterval(() => this.emitEvent(), 1000);
-    this.bJour;  // False : Nuit   True : Jour
-    this.eventgerecyclejour = new eventEmitter();
+    this.bJour = true;  // False : Nuit   True : Jour
+    this.eventgerecyclejour = new EventEmitter();
   }
 
   emitEvent() {
@@ -18,5 +18,5 @@ class GereJourNuit {
   }
 }
 
-module.exports = {GereJourNuit};
+module.exports = {CycleDayManager};
 
